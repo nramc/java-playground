@@ -1,5 +1,7 @@
 package dev.codewithram.algorithms;
 
+import java.util.function.UnaryOperator;
+
 /**
  * Your task in order to complete this Kata is to write a function which formats a duration,
  * given as a number of seconds, in a human-friendly way.
@@ -38,50 +40,55 @@ package dev.codewithram.algorithms;
  * It means that the function should not return 61 seconds, but 1 minute and 1 second instead.
  * Formally, the duration specified by of a component must not be greater than any valid more significant unit of time.
  */
+
 public class TimeFormatter {
-    private static final int YEAR_IN_SECONDS = 365 * 24 * 60 * 60;
-    private static final int DAY_IN_SECONDS = 24 * 60 * 60;
-    private static final int HOURS_IN_SECONDS = 60 * 60;
-    private static final int MINUTES_IN_SECONDS = 60;
+    static final int YEAR_IN_SECONDS = 365 * 24 * 60 * 60;
+    static final int DAY_IN_SECONDS = 24 * 60 * 60;
+    static final int HOURS_IN_SECONDS = 60 * 60;
+    static final int MINUTES_IN_SECONDS = 60;
+
+    public static final String LAST_COMPONENT_SEP = " and ";
+    public static final String COMPONENT_SEP = ", ";
+
+    private static final UnaryOperator<State> FORMAT_YEAR = input -> {
+        int componentVal = input.seconds / YEAR_IN_SECONDS;
+        String componentTxt = componentVal + " " + (componentVal > 1 ? "years" : "year");
+
+        if (componentVal > 0) {
+
+            int remainingSeconds = input.seconds - (componentVal * YEAR_IN_SECONDS);
+
+            String formattedText = "";
+            if (input.result.isBlank()) {
+                formattedText = componentTxt;
+            } else {
+                formattedText = input.result + (remainingSeconds <= 0 ? LAST_COMPONENT_SEP : COMPONENT_SEP) + componentTxt;
+            }
+
+
+            return new State(remainingSeconds, formattedText);
+
+        } else {
+            return input;
+        }
+
+    };
 
     private TimeFormatter() {
     }
 
     public static String formatDuration(int seconds) {
-        StringBuilder resultBuilder = new StringBuilder();
-        int numberOfSeconds = seconds;
-
-        int numberOfYears = numberOfSeconds / YEAR_IN_SECONDS;
-        numberOfSeconds -= numberOfYears * YEAR_IN_SECONDS;
-        if (numberOfYears > 0) {
-            resultBuilder.append(numberOfYears).append(numberOfYears > 1 ? " years " : " year ");
-        }
-
-        int numberOfDays = numberOfSeconds / DAY_IN_SECONDS;
-        numberOfSeconds -= numberOfDays * DAY_IN_SECONDS;
-        if (numberOfDays > 0) {
-            resultBuilder.append(numberOfDays).append(numberOfDays > 1 ? " days " : " day ");
-        }
-
-        int numberOfHours = numberOfSeconds / HOURS_IN_SECONDS;
-        numberOfSeconds -= numberOfHours * HOURS_IN_SECONDS;
-        if (numberOfHours > 0) {
-            resultBuilder.append(numberOfHours).append(numberOfHours > 1 ? " hours " : " hour ");
-        }
-
-        int numberOfMinutes = numberOfSeconds / MINUTES_IN_SECONDS;
-        numberOfSeconds -= numberOfMinutes * MINUTES_IN_SECONDS;
-        if (numberOfMinutes > 0) {
-            resultBuilder.append(numberOfMinutes).append(numberOfMinutes > 1 ? " minutes " : " minute ");
-        }
-
-        if (numberOfSeconds > 0) {
-            resultBuilder.append(numberOfSeconds).append(numberOfSeconds > 1 ? " seconds " : " second ");
-        }
 
 
-        // your code goes here
-        return resultBuilder.toString().trim();
+        return FORMAT_YEAR.apply(new State(seconds, "")).result;
     }
+
+    record State(int seconds, String result) {
+    }
+
+    record ProcessingState(State input, int componentVal, String componentTxt) {
+
+    }
+
 
 }
