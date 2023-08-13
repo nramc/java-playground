@@ -51,20 +51,19 @@ public class TimeFormatter {
     public static final String COMPONENT_SEP = ", ";
 
     private static final UnaryOperator<State> FORMAT_YEAR = input -> {
-        int componentVal = input.seconds / YEAR_IN_SECONDS;
-        String componentTxt = componentVal + " " + (componentVal > 1 ? "years" : "year");
+
+        int componentUnitInSeconds = YEAR_IN_SECONDS;
+        String component = "year";
+
+        int componentVal = input.seconds / componentUnitInSeconds;
+        String componentTxt = componentVal + " " + (componentVal > 1 ? component + "s" : component);
 
         if (componentVal > 0) {
 
-            int remainingSeconds = input.seconds - (componentVal * YEAR_IN_SECONDS);
+            int remainingSeconds = input.seconds - (componentVal * componentUnitInSeconds);
 
-            String formattedText = "";
-            if (input.result.isBlank()) {
-                formattedText = componentTxt;
-            } else {
-                formattedText = input.result + (remainingSeconds <= 0 ? LAST_COMPONENT_SEP : COMPONENT_SEP) + componentTxt;
-            }
-
+            String separator = remainingSeconds <= 0 ? LAST_COMPONENT_SEP : COMPONENT_SEP;
+            String formattedText = input.formattedTxt().isBlank() ? componentTxt : input.formattedTxt() + separator + componentTxt;
 
             return new State(remainingSeconds, formattedText);
 
@@ -80,14 +79,10 @@ public class TimeFormatter {
     public static String formatDuration(int seconds) {
 
 
-        return FORMAT_YEAR.apply(new State(seconds, "")).result;
+        return FORMAT_YEAR.apply(new State(seconds, "")).formattedTxt();
     }
 
-    record State(int seconds, String result) {
-    }
-
-    record ProcessingState(State input, int componentVal, String componentTxt) {
-
+    record State(int seconds, String formattedTxt) {
     }
 
 
