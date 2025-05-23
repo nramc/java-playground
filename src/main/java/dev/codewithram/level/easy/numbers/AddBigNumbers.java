@@ -1,13 +1,15 @@
 package dev.codewithram.level.easy.numbers;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Function;
 
-@Slf4j
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class AddBigNumbers {
+    private static final Logger log = getLogger(AddBigNumbers.class);
     private static final Function<String, Integer[]> fnToIntArray = val ->
             Arrays.stream(val.split("")).map(Integer::parseInt).toArray(Integer[]::new);
 

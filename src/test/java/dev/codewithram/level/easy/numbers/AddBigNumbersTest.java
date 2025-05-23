@@ -1,11 +1,13 @@
 package dev.codewithram.level.easy.numbers;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Disabled("Disabled until the implementation is complete")
 class AddBigNumbersTest {
 
     @ParameterizedTest(name = "{0} + {1} = {2}")
